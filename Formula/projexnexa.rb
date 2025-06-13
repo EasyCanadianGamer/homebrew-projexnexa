@@ -8,8 +8,21 @@ class Projexnexa < Formula
   depends_on macos: :monterey
 
   def install
-    prefix.install "ProjexNexa.app"
-    bin.write_exec_script prefix/"ProjexNexa.app/Contents/MacOS/ProjexNexa"
+    # Explicit extraction to temp dir
+    temp_dir = "#{buildpath}/temp_extract"
+    mkdir_p temp_dir
+    system "tar", "-xzf", "#{buildpath}/ProjexNexa.app.tar.gz", "-C", temp_dir
+
+    # Find the app bundle (case-sensitive)
+    app_bundle = Dir.glob("#{temp_dir}/**/ProjexNexa.app").first
+    raise "ProjexNexa.app not found in archive!" unless app_bundle
+
+    # Install with explicit paths
+    prefix.install app_bundle => "ProjexNexa.app"
+    bin.write_exec_script "#{prefix}/ProjexNexa.app/Contents/MacOS/ProjexNexa"
+
+    # Verify installation
+    ohai "Installed to: #{prefix}/ProjexNexa.app"
   end
 
   test do
