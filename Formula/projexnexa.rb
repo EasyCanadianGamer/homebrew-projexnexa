@@ -1,4 +1,4 @@
-class ProjexNexa < Formula
+class Projexnexa < Formula
   desc "Tauri application for project management"
   homepage "https://github.com/EasyCanadianGamer/ProjexNexa"
   url "https://github.com/EasyCanadianGamer/ProjexNexa/releases/download/V0.1.5/ProjexNexa.app.tar.gz"
