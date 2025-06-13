@@ -8,21 +8,25 @@ class Projexnexa < Formula
   depends_on macos: :monterey
 
   def install
-    # Explicit extraction to temp dir
+    # 1. Get the actual downloaded tarball path
+    tarball = cached_download
+    
+    # 2. Create clean extraction directory
     temp_dir = "#{buildpath}/temp_extract"
     mkdir_p temp_dir
-    system "tar", "-xzf", "#{buildpath}/ProjexNexa.app.tar.gz", "-C", temp_dir
-
-    # Find the app bundle (case-sensitive)
-    app_bundle = Dir.glob("#{temp_dir}/**/ProjexNexa.app").first
-    raise "ProjexNexa.app not found in archive!" unless app_bundle
-
-    # Install with explicit paths
-    prefix.install app_bundle => "ProjexNexa.app"
+    
+    # 3. Explicit extraction command
+    system "tar", "-xzf", tarball, "-C", temp_dir
+    
+    # 4. Find and verify the app bundle
+    app_path = Dir.glob("#{temp_dir}/ProjexNexa.app").first
+    odie "App bundle not found in archive!" unless app_path
+    
+    # 5. Install with absolute paths
+    prefix.install app_path
     bin.write_exec_script "#{prefix}/ProjexNexa.app/Contents/MacOS/ProjexNexa"
-
-    # Verify installation
-    ohai "Installed to: #{prefix}/ProjexNexa.app"
+    
+    ohai "Successfully installed ProjexNexa.app to #{prefix}"
   end
 
   test do
