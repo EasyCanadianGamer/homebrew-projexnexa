@@ -24,36 +24,22 @@ class Projexnexa < Formula
     
     # 5. Install to both Homebrew Cellar and Applications
     prefix.install app_path
-    bin.write_exec_script "#{prefix}/ProjexNexa.app/Contents/MacOS/ProjexNexa"
-    
+    apps_dir = "/Applications"    
     # Create Applications symlink (for Launchpad visibility)
-    apps_dir = "/Applications"
-    if Dir.exist?(apps_dir)
-      app_name = "ProjexNexa.app"
-      installed_path = "#{prefix}/#{app_name}"
-      applications_path = "#{apps_dir}/#{app_name}"
-      
-      # Remove old symlink if exists
-      FileUtils.rm_f(applications_path)
-      # Create new symlink
-      FileUtils.ln_sf(installed_path, applications_path)
-    end
+   if Dir.exist?(apps_dir)
+    app_name = "ProjexNexa.app"
+    src_path = "#{prefix}/#{app_name}"
+    dest_path = "#{apps_dir}/#{app_name}"
     
+         # Remove old version if exists
+    system "rm", "-rf", dest_path if File.exist?(dest_path)
+    # Copy new version
+    system "cp", "-R", src_path, apps_dir
+    end
+      bin.write_exec_script "#{prefix}/ProjexNexa.app/Contents/MacOS/ProjexNexa"
     ohai "Successfully installed ProjexNexa.app to #{prefix} and linked to Applications"
   end
 
-  def caveats
-    <<~EOS
-      The application has been linked to your /Applications folder.
-      You can launch it from:
-      - Launchpad
-      - Spotlight (Cmd+Space then type "ProjexNexa")
-      - Terminal: open #{prefix}/ProjexNexa.app
-      
-      To unlink from Applications while keeping the Homebrew installation:
-        brew unlink projexnexa
-    EOS
-  end
 
   test do
     system "#{bin}/ProjexNexa", "--version"
