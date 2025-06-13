@@ -7,46 +7,33 @@ class Projexnexa < Formula
 
   depends_on macos: :monterey
 
-def install
-  # 1. Get the actual downloaded tarball path
-  tarball = cached_download
-  
-  # 2. Create clean extraction directory
-  temp_dir = "#{buildpath}/temp_extract"
-  mkdir_p temp_dir
-  
-  # 3. Extract the tarball
-  system "tar", "-xzf", tarball, "-C", temp_dir
-  
-  # 4. Find and verify the app bundle
-  app_path = Dir.glob("#{temp_dir}/ProjexNexa.app").first
-  odie "App bundle not found in archive!" unless app_path
-  
-  # 5. Install to Homebrew Cellar
-  prefix.install app_path
-  bin.write_exec_script "#{prefix}/ProjexNexa.app/Contents/MacOS/ProjexNexa"
-  
-  # 6. Install to User Applications (~/Applications)
-  user_apps = File.expand_path("~/Applications")
-  mkdir_p user_apps unless Dir.exist?(user_apps)
-  cp_r app_path, user_apps
-  
-  ohai "App installed to Homebrew Cellar and user Applications folder"
-end
-
-def caveats
-  <<~EOS
-    ProjexNexa has been installed to:
-      - #{prefix}/ProjexNexa.app (Homebrew managed)
-      - ~/Applications/ProjexNexa.app (for easy access)
-
-    You can launch it from:
-    - Your user Applications folder
-    - Spotlight (Cmd+Space then type "ProjexNexa")
-    - Terminal: open ~/Applications/ProjexNexa.app
-  EOS
-end
-
+  def install
+    # 1. Get exact downloaded path
+    tarball = cached_download
+    ohai "Using tarball at: #{tarball}"
+    
+    # 2. Create extraction directory in buildpath
+    temp_dir = buildpath/"temp_extract"
+    temp_dir.mkpath
+    
+    # 3. Debug: List tarball contents
+    system "tar", "-tzf", tarball
+    
+    # 4. Extract with full path output
+    system "tar", "-xzvf", tarball, "-C", temp_dir, "--strip-components", "0"
+    
+    # 5. Verify extraction
+    extracted = Dir.glob(temp_dir/"ProjexNexa.app")
+    odie "App bundle not found in #{temp_dir}" if extracted.empty?
+    
+    # 6. Install to Homebrew prefix
+    prefix.install extracted.first => "ProjexNexa.app"
+    
+    # 7. Create launcher script
+    bin.write_exec_script prefix/"ProjexNexa.app/Contents/MacOS/ProjexNexa"
+    
+    ohai "Successfully installed to #{prefix}"
+  end
 
   test do
     system "#{bin}/ProjexNexa", "--version"
