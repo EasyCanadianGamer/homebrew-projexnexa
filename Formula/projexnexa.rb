@@ -12,27 +12,22 @@ class Projexnexa < Formula
     tarball = cached_download
     ohai "Using tarball at: #{tarball}"
     
-    # 2. Create extraction directory in buildpath
+    # 2. Create extraction directory
     temp_dir = buildpath/"temp_extract"
     temp_dir.mkpath
     
-    # 3. Debug: List tarball contents
-    system "tar", "-tzf", tarball
-    
-    # 4. Extract with full path output
+    # 3. Extract with full path output
     system "tar", "-xzvf", tarball, "-C", temp_dir, "--strip-components", "0"
     
-    # 5. Verify extraction
+    # 4. Verify extraction
     extracted = Dir.glob(temp_dir/"ProjexNexa.app")
     odie "App bundle not found in #{temp_dir}" if extracted.empty?
     
-    # 6. Install to Homebrew prefix
+    # 5. Install to Homebrew prefix
     prefix.install extracted.first => "ProjexNexa.app"
     
-    # 7. Create launcher script
+    # 6. Create launcher script
     bin.write_exec_script prefix/"ProjexNexa.app/Contents/MacOS/ProjexNexa"
-    
-    ohai "Successfully installed to #{prefix}"
   end
 
   test do
