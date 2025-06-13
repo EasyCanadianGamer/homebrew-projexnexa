@@ -1,4 +1,4 @@
-class Projexnexa < Formula
+]class Projexnexa < Formula
   desc "Tauri application for project management"
   homepage "https://github.com/EasyCanadianGamer/ProjexNexa"
   url "https://github.com/EasyCanadianGamer/ProjexNexa/releases/download/v0.1.5/ProjexNexa.app.tar.gz"
@@ -22,11 +22,37 @@ class Projexnexa < Formula
     app_path = Dir.glob("#{temp_dir}/ProjexNexa.app").first
     odie "App bundle not found in archive!" unless app_path
     
-    # 5. Install with absolute paths
+    # 5. Install to both Homebrew Cellar and Applications
     prefix.install app_path
     bin.write_exec_script "#{prefix}/ProjexNexa.app/Contents/MacOS/ProjexNexa"
     
-    ohai "Successfully installed ProjexNexa.app to #{prefix}"
+    # Create Applications symlink (for Launchpad visibility)
+    apps_dir = "/Applications"
+    if Dir.exist?(apps_dir)
+      app_name = "ProjexNexa.app"
+      installed_path = "#{prefix}/#{app_name}"
+      applications_path = "#{apps_dir}/#{app_name}"
+      
+      # Remove old symlink if exists
+      FileUtils.rm_f(applications_path)
+      # Create new symlink
+      FileUtils.ln_sf(installed_path, applications_path)
+    end
+    
+    ohai "Successfully installed ProjexNexa.app to #{prefix} and linked to Applications"
+  end
+
+  def caveats
+    <<~EOS
+      The application has been linked to your /Applications folder.
+      You can launch it from:
+      - Launchpad
+      - Spotlight (Cmd+Space then type "ProjexNexa")
+      - Terminal: open #{prefix}/ProjexNexa.app
+      
+      To unlink from Applications while keeping the Homebrew installation:
+        brew unlink projexnexa
+    EOS
   end
 
   test do
