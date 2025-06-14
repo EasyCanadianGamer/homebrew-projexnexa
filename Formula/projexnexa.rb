@@ -1,8 +1,8 @@
 class Projexnexa < Formula
   desc "Tauri application for project management"
   homepage "https://github.com/EasyCanadianGamer/ProjexNexa"
-  url "https://github.com/EasyCanadianGamer/ProjexNexa/releases/download/v0.1.5/ProjexNexa.app.tar.gz"
-  sha256 "fbc7dca19c031e59e47467171324d0800ddd1fea1ad0d605914b06d1e2fd6788"
+  url "https://github.com/EasyCanadianGamer/ProjexNexa/releases/download/v0.1.6/ProjexNexa.app.tar.gz"
+  sha256 "340c04860414da5f17fadaa1d1c8aced618916f50316aa86c91fa468b22ca2f6"
   license "MIT"
 
   depends_on macos: :monterey
